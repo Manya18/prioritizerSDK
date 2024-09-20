@@ -1,0 +1,44 @@
+.SurveyPopup{
+    border: 1px solid black;
+    width: fit-content;
+}
+.SurveyPopup-header{
+    padding: 22px 20px;
+    border-bottom: 1px solid rgba(0, 71, 255, 0.3);
+}
+.SurveyPopup-title{
+    font-size: 28px;
+    font-weight: 400;
+}
+.SurveyPopup-content{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 20px;
+}
+.SurveyPopup-question{
+
+}
+.SurveyPopup-question-title{
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 25px;
+}
+.SurveyPopup-answers{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.SurveyPopup-answer{
+    font-size: 16px;
+}
+.SurveyPopup-submitButton{
+    padding: 10px 23px;
+    font-size: 20px;
+    background-color: #0047FF;
+    color: #fff;
+    border-radius: 13px;
+    border: none;
+    width: fit-content;
+    align-self: center;
+}

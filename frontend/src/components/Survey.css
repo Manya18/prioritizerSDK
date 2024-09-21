@@ -1,44 +1,78 @@
-.Survey{
-    border: 1px solid black;
+.Survey {
+    border: 1px solid #0047FF;
+    border-radius: 8px;
     width: fit-content;
+    position: relative;
 }
-.Survey-header{
-    padding: 22px 20px;
-    border-bottom: 1px solid rgba(0, 71, 255, 0.3);
-}
-.Survey-title{
-    font-size: 28px;
-    font-weight: 400;
-}
-.Survey-content{
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    padding: 20px;
-}
-.Survey-question{
 
+.Survey-header {
+    padding: 15px 20px;
+    border-bottom: 2px solid #0047FF;
 }
-.Survey-question-title{
-    font-size: 24px;
+
+.Survey-title {
+    font-size: 20px;
     font-weight: 400;
-    margin-bottom: 25px;
 }
-.Survey-answers{
+
+.Survey-content {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    padding: 0 20px;
 }
-.Survey-answer{
+
+.Survey-question {
+    padding: 7px;
+}
+
+.Survey-feature {
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+.Survey-question-title {
+    font-size: 18px;
+    font-weight: 400;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.Survey-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.Survey-answer {
     font-size: 16px;
 }
-.Survey-submitButton{
-    padding: 10px 23px;
-    font-size: 20px;
-    background-color: #0047FF;
-    color: #fff;
+
+.Survey-backNextButton {
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #ddd;
+    color: #333;
     border-radius: 13px;
     border: none;
-    width: fit-content;
-    align-self: center;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.Survey-backNextButton:disabled {
+    display: none;
+}
+
+.Survey-submitButton {
+    padding: 10px 23px;
+    font-size: 16px;
+    background-color: #0047FF;
+    color: white;
+    border-radius: 13px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
 }

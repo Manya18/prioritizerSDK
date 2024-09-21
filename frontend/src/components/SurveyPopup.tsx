@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import './SurveyPopup.css';
 
 type Survey = {
@@ -8,22 +8,53 @@ type Survey = {
 }
 
 type Question = {
-  id: number
+  id: number,
   title: string,
-  type: string
-  answers: Answer[]
+  type: string,
+  answers: Answer[],
 }
+
 type Answer = {
   id: number,
   title: string,
 }
-// TODO: вынести варианты ответа и в зависимости от типа отрисовывать
-const SurveyPopup = ({ survey, onSubmit }: { survey : Survey, onSubmit: ()=> void }) => {
 
-  const [answers, setAnswers] = useState<{[key: number] : string}>({});
-  const handleChange = (question_id: number, value: string) => {
-    setAnswers((prevAnswers) => ({...prevAnswers, [question_id] : value}))
-  }
+type AnswerWithImportance = {
+  answerId: number,
+  importance: number
+}
+
+// TODO: вынести варианты ответа и в зависимости от типа отрисовывать
+const SurveyPopup = ({ survey, onSubmit }: { survey: Survey, onSubmit: () => void }) => {
+
+  const [answers, setAnswers] = useState<{ [questionId: number]: AnswerWithImportance[] }>({});
+
+  const handleChange = (questionId: number, answerId: number, checked: boolean) => {
+    setAnswers((prevAnswers) => {
+      const updatedAnswers = prevAnswers[questionId] || [];
+
+      if (checked) {
+        return {
+          ...prevAnswers,
+          [questionId]: [...updatedAnswers, { answerId, importance: 1 }]
+        };
+      } else {
+        return {
+          ...prevAnswers,
+          [questionId]: updatedAnswers.filter((a) => a.answerId !== answerId)
+        };
+      }
+    });
+  };
+
+  const handleImportanceChange = (questionId: number, answerId: number, importance: number) => {
+    setAnswers((prevAnswers) => {
+      const updatedAnswers = prevAnswers[questionId].map((a) =>
+        a.answerId === answerId ? { ...a, importance } : a
+      );
+      return { ...prevAnswers, [questionId]: updatedAnswers };
+    });
+  };
 
   return (
     <div className="SurveyPopup">
@@ -31,19 +62,35 @@ const SurveyPopup = ({ survey, onSubmit }: { survey : Survey, onSubmit: ()=> voi
         <h1 className='SurveyPopup-title'>Это первый опрос в моей жизни</h1>
       </header>
       <main className='SurveyPopup-content'>
-        {survey.questions.map((q: Question)=>(
+        {survey.questions.map((q: Question) => (
           <div key={q.id} className='SurveyPopup-question'>
-            <h2 className='SurveyPopup-question-title'>{ q.title }</h2>
+            <h2 className='SurveyPopup-question-title'>{q.title}</h2>
             <div className='SurveyPopup-answers'>
-              {q.answers.map((a: Answer)=>(
+              {q.answers.map((a: Answer) => (
                 <div className='SurveyPopup-answer' key={a.id}>
-                  <input 
-                    type={q.type} 
-                    name={q.title} 
-                    value={a.id}
-                    onChange={(e) => handleChange(q.id, e.target.value)}
-                  ></input>
-                  <label htmlFor={q.title}>{a.title}</label>
+                  <input
+                    type="checkbox"
+                    id={`answer-${a.id}`}
+                    onChange={(e) => handleChange(q.id, a.id, e.target.checked)}
+                  />
+                  <label htmlFor={`answer-${a.id}`}>{a.title}</label>
+
+                  {answers[q.id]?.some((ans) => ans.answerId === a.id) && (
+                    <div className="SurveyPopup-importance">
+                      {[1, 2, 3, 4, 5].map((level) => (
+                        <label key={level}>
+                          <input
+                            type="radio"
+                            name={`importance-${a.id}`}
+                            value={level}
+                            checked={answers[q.id]?.find((ans) => ans.answerId === a.id)?.importance === level}
+                            onChange={() => handleImportanceChange(q.id, a.id, level)}
+                          />
+                          {level}
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -53,6 +100,6 @@ const SurveyPopup = ({ survey, onSubmit }: { survey : Survey, onSubmit: ()=> voi
       </main>
     </div>
   );
-}
+};
 
 export default SurveyPopup;

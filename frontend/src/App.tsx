@@ -3,13 +3,7 @@ import './App.css';
 import Survey from './components/Survey';
 import KanoTable from './components/KanoTable';
 import KanoBarChart from './components/KanoBarChart';
-import { Answer, Feature } from './types/types';
-
-type ResultsType = {
-  [feature_id: number]: {
-    [question_id: number]: Answer;
-  }
-}
+import { Answer, Feature, ResultsType } from './types/types';
 
 function App() {
   const [surveyResults, setSurveyResults] = React.useState<ResultsType>({});

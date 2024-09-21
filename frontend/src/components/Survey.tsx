@@ -59,6 +59,7 @@ const Survey: React.FC<SurveyProps> = ({
         [question.id]: answer,
       },
     }));
+    
   };
 
   const nextFeature = () => {

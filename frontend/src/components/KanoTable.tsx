@@ -29,6 +29,7 @@ const getCellColor = (category: KanoCategory) => {
 };
 
 const KanoTable = ({ results, features }: { results: ResultsType, features: Feature[] }) => {
+    console.log(results)
     return (
         <div className="kano-table">
             <h2>Таблица Кано</h2>

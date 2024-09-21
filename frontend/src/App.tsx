@@ -74,6 +74,7 @@ function App() {
     fetchFeatures();
   }, []);
 
+
   return (
     <div className="App">
       <Survey
@@ -83,7 +84,25 @@ function App() {
         buttonStyle={{ backgroundColor: "blue", color: "white" }}
       />
 
-      <KanoTable results={surveyResults} features={features} />
+      <KanoTable
+        results={surveyResults}
+        features={features}
+        tableStyle={{
+          width: '100%',
+          backgroundColor: '#f8f8f8',
+          color: '#333',
+          textAlign: 'center',
+          fontSize: '16px'
+        }}
+        cellStyles={{
+          'Must-be': { backgroundColor: 'lightgreen' },
+          'Performance': { backgroundColor: 'lightgreen' },
+          'Excitement': { backgroundColor: 'lightgreen' },
+          'Indifferent': { backgroundColor: 'lightgreen' },
+          'Reverse': { backgroundColor: 'lightgreen' }
+        }}
+      />
+
       <KanoBarChart results={surveyResults} features={features} />
     </div>
   );

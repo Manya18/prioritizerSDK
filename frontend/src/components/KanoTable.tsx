@@ -28,12 +28,35 @@ const getCellColor = (category: KanoCategory) => {
     }
 };
 
-const KanoTable = ({ results, features }: { results: ResultsType, features: Feature[] }) => {
+const KanoTable = ({
+    results,
+    features,
+    cellStyles,
+    tableStyle
+}: {
+    results: ResultsType,
+    features: Feature[],
+    cellStyles?: { [key in KanoCategory]?: React.CSSProperties },
+    tableStyle?: React.CSSProperties
+}) => {
+    const defaultStyles = {
+        'Must-be': { backgroundColor: getCellColor('Must-be') },
+        'Performance': { backgroundColor: getCellColor('Performance') },
+        'Excitement': { backgroundColor: getCellColor('Excitement') },
+        'Indifferent': { backgroundColor: getCellColor('Indifferent') },
+        'Reverse': { backgroundColor: getCellColor('Reverse') }
+    };
+
     console.log(results)
     return (
         <div className="kano-table">
             <h2>Таблица Кано</h2>
-            <table border={1} cellPadding={10} cellSpacing={0}>
+            <table
+                border={1}
+                cellPadding={10}
+                cellSpacing={0}
+                style={tableStyle}
+            >
                 <thead>
                     <tr>
                         <th>Функция</th>
@@ -57,11 +80,11 @@ const KanoTable = ({ results, features }: { results: ResultsType, features: Feat
                             return (
                                 <tr key={feature.id}>
                                     <td>{feature.title}</td>
-                                    <td style={{ backgroundColor: category === 'Must-be' ? getCellColor('Must-be') : '' }}></td>
-                                    <td style={{ backgroundColor: category === 'Performance' ? getCellColor('Performance') : '' }}></td>
-                                    <td style={{ backgroundColor: category === 'Excitement' ? getCellColor('Excitement') : '' }}></td>
-                                    <td style={{ backgroundColor: category === 'Indifferent' ? getCellColor('Indifferent') : '' }}></td>
-                                    <td style={{ backgroundColor: category === 'Reverse' ? getCellColor('Reverse') : '' }}></td>
+                                    <td style={category === 'Must-be' ? { ...defaultStyles['Must-be'], ...cellStyles?.['Must-be'] } : {}}></td>
+                                    <td style={category === 'Performance' ? { ...defaultStyles['Performance'], ...cellStyles?.['Performance'] } : {}}></td>
+                                    <td style={category === 'Excitement' ? { ...defaultStyles['Excitement'], ...cellStyles?.['Excitement'] } : {}}></td>
+                                    <td style={category === 'Indifferent' ? { ...defaultStyles['Indifferent'], ...cellStyles?.['Indifferent'] } : {}}></td>
+                                    <td style={category === 'Reverse' ? { ...defaultStyles['Reverse'], ...cellStyles?.['Reverse'] } : {}}></td>
                                 </tr>
                             );
                         } else {
@@ -80,5 +103,6 @@ const KanoTable = ({ results, features }: { results: ResultsType, features: Feat
         </div>
     );
 };
+
 
 export default KanoTable;

@@ -48,15 +48,15 @@ const KanoBarChart = ({ results, features }: { results: ResultsType, features: F
             'Reverse': 0,
           };
 
-          const totalResponses = 100; 
-          categoryCounts[category] = 100; 
+          const totalResponses = 100;
+          categoryCounts[category] = 100;
 
           return (
             <div key={feature.id} className="kano-feature">
               <h3>{feature.title}</h3>
               <div className="kano-bar" style={{ display: 'flex', height: '30px', width: '100%' }}>
                 {Object.keys(categoryCounts).map((cat) => {
-                  const percentage = categoryCounts[cat as KanoCategory]; 
+                  const percentage = categoryCounts[cat as KanoCategory];
                   return (
                     <div
                       key={cat}

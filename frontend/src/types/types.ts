@@ -15,7 +15,6 @@ export type Answer = {
   priority: number;
 };
 
-
 export type ResultsType = {
   [feature_id: number]: {
     [question_id: number]: Answer;

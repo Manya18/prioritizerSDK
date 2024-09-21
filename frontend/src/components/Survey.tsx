@@ -4,7 +4,6 @@ import { Feature, Question, Answer, ResultsType } from '../types/types';
 
 const Survey = ({ features, onSubmit }: { features: Feature[], onSubmit: (results: ResultsType) => void }) => {
 
-
   const [results, setResults] = useState<ResultsType>({});
 
   const questions: Question[] = [

@@ -1,25 +1,17 @@
 const express = require('express');
 const cors = require('cors');
+const featureRouter = require('./routes/features.routes')
+const choiceRouter = require('./routes/choice.routes')
+
+const PORT = process.env.PORT || 8080
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json())
+app.use('/api', featureRouter)
+app.use('/api', choiceRouter)
 
-let votes = {}; // голоса
-
-app.post('/api/vote', (req, res) => {
-  const { featureId } = req.body;
-  if (!votes[featureId]) {
-    votes[featureId] = 0; 
-  }
-  votes[featureId]++;
-  res.status(200).json({ message: 'Vote counted!', votes });
+app.listen(PORT, () => {
+  console.log(`Server is running on post ${PORT}`);
 });
 
-app.get('/api/votes', (req, res) => {
-  res.status(200).json(votes); // текущие голоса
-});
-
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
-});

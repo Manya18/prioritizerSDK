@@ -1,13 +1,7 @@
 import React from 'react';
 import './App.css';
 import Survey from './components/Survey';
-import { Answer, Feature } from './types/types';
-
-type ResultsType = {
-  [feature_id: number]: {
-    [question_id: number]: Answer;
-  }
-}
+import { Answer, Feature, ResultsType } from './types/types';
 
 function App() {
   const onSubmit = (results: ResultsType) => {

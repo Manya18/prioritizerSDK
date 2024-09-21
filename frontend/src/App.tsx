@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Survey from './components/Survey';
 import KanoTable from './components/KanoTable';
@@ -6,22 +6,30 @@ import KanoBarChart from './components/KanoBarChart';
 import { Answer, Feature, ResultsType } from './types/types';
 
 function App() {
-  const [surveyResults, setSurveyResults] = React.useState<ResultsType>({});
+  const [surveyResults, setSurveyResults] = useState<ResultsType>({});
+  const [features, setFeatures] = useState([]);
+  const [error, setError] = useState<any>(null);
 
   const onSubmit = (results: ResultsType) => {
     setSurveyResults(results);
   }
 
-  const features: Feature[] = [
-    {
-      id: 0,
-      title: 'Функция: Строка поиска'
-    },
-    {
-      id: 1,
-      title: 'Функция: Тёмная тема'
-    },
-  ];
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      try{
+        const response = await fetch('http://localhost:8080/api/feature');
+        if(!response.ok){
+          throw new Error("Trouble");
+        }
+        const data = await response.json();
+        setFeatures(data);
+      } catch(error){
+        setError(error)
+      }
+    }
+
+    fetchFeatures();
+  }, [])
 
   return (
     <div className="App">

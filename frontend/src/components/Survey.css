@@ -1,38 +1,38 @@
-.SurveyPopup{
+.Survey{
     border: 1px solid black;
     width: fit-content;
 }
-.SurveyPopup-header{
+.Survey-header{
     padding: 22px 20px;
     border-bottom: 1px solid rgba(0, 71, 255, 0.3);
 }
-.SurveyPopup-title{
+.Survey-title{
     font-size: 28px;
     font-weight: 400;
 }
-.SurveyPopup-content{
+.Survey-content{
     display: flex;
     flex-direction: column;
     gap: 40px;
     padding: 20px;
 }
-.SurveyPopup-question{
+.Survey-question{
 
 }
-.SurveyPopup-question-title{
+.Survey-question-title{
     font-size: 24px;
     font-weight: 400;
     margin-bottom: 25px;
 }
-.SurveyPopup-answers{
+.Survey-answers{
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
-.SurveyPopup-answer{
+.Survey-answer{
     font-size: 16px;
 }
-.SurveyPopup-submitButton{
+.Survey-submitButton{
     padding: 10px 23px;
     font-size: 20px;
     background-color: #0047FF;

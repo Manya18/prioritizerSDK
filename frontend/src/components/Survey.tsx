@@ -60,12 +60,13 @@ const Survey: React.FC<SurveyProps> = ({
   };
 
   const nextFeature = () => {
-    debugger
-    setResults([ ...results, { positive: positive, negative: negative, feature_id: features[currentFeatureIndex].id!, survey_id: survey_id } ]);
+    setResults([...results, { positive: positive, negative: negative, feature_id: features[currentFeatureIndex].id!, survey_id: survey_id }]);
     if (currentFeatureIndex < features.length - 1) {
       setCurrentFeatureIndex(prev => prev + 1);
     } else {
-      onSubmit(results);
+      onSubmit([...results, { positive: positive, negative: negative, feature_id: features[currentFeatureIndex].id!, survey_id: survey_id }]);
+      //setResults([]);
+      window.location.reload();
     }
   };
 

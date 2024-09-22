@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     container_name: db
@@ -20,7 +18,8 @@ services:
   backend:
     container_name: prioritizerSDK-backend
     build:
-      context: ./
+      context: .
+      dockerfile: DOCKERFILE
     ports:
       - ${PORT}:${PORT}
     depends_on:

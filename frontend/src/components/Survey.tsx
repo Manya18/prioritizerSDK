@@ -26,6 +26,7 @@ const Survey: React.FC<SurveyProps> = ({
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [results, setResults] = useState<Choice[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: { positive?: number; negative?: number } }>({});
+  const [isOpen, setIsOpen] = useState(false);
   const survey_id = 1;
 
   const questions: Question[] = [
@@ -103,6 +104,10 @@ const Survey: React.FC<SurveyProps> = ({
         {features.length > 0 && (
           <div className='feature'>
             <h3 className='prioritizerSDK-feature'>{features[currentFeatureIndex].title}</h3>
+            {features[currentFeatureIndex].description.length > 0 && <div className='prioritizerSDK-decription'>
+              <div className='' onClick={() => setIsOpen(!isOpen)}>Описание ↓</div>
+              <div className=''style={{display: isOpen ? 'block' : 'none'}}>{features[currentFeatureIndex].description}</div>
+            </div>}
             {questions.map((q: Question) => (
               <div key={q.id} className='prioritizerSDK-question'>
                 <h2 className='prioritizerSDK-question-title'>{q.title}</h2>

@@ -12,8 +12,9 @@ const Survey: React.FC<SurveyProps> = ({
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [results, setResults] = useState<Choice[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: { positive?: number; negative?: number } }>({});
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
   const [features, setFeatures] = useState([]);
+  const [unansweredQuestions, setUnansweredQuestions] = useState<boolean[]>([]);
 
   useEffect(() => {
     const fetchFeatures = async () => {
@@ -29,7 +30,7 @@ const Survey: React.FC<SurveyProps> = ({
       }
     };
     fetchFeatures();
-  }, []);
+  }, [survey_id]);
 
   const questions: Question[] = [
     {
@@ -67,7 +68,6 @@ const Survey: React.FC<SurveyProps> = ({
   };
 
   const createChoices = (choicesArray: Choice[]) => {
-    debugger
     choicesArray.map(async (f: Choice) => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/api/choice`, {
@@ -86,15 +86,37 @@ const Survey: React.FC<SurveyProps> = ({
 
   const nextFeature = () => {
     const currentSelected = selectedAnswers[currentFeatureIndex] || {};
+
+    const isAnswered = questions.every((q) => {
+      if (q.id === 0) return currentSelected.positive !== undefined;
+      if (q.id === 1) return currentSelected.negative !== undefined;
+      return false;
+    });
+
+    if (!isAnswered) {
+      setUnansweredQuestions((prev) => {
+        const newUnanswered = [...prev];
+        newUnanswered[currentFeatureIndex] = true;
+        return newUnanswered;
+      });
+      return;
+    }
+
+    setUnansweredQuestions((prev) => {
+      const newUnanswered = [...prev];
+      newUnanswered[currentFeatureIndex] = false;
+      return newUnanswered;
+    });
+
     setResults([...results, {
       positive: currentSelected.positive || 0,
       negative: currentSelected.negative || 0,
       feature_id: (features[currentFeatureIndex] as any).id!,
-      survey_id: Number(survey_id)
+      survey_id: Number(survey_id),
     }]);
 
     if (currentFeatureIndex < features.length - 1) {
-      setCurrentFeatureIndex(prev => prev + 1);
+      setCurrentFeatureIndex((prev) => prev + 1);
     } else {
       createChoices([...results, {
         positive: currentSelected.positive || 0,
@@ -105,6 +127,7 @@ const Survey: React.FC<SurveyProps> = ({
       setCurrentFeatureIndex(0);
       setResults([]);
       setSelectedAnswers({});
+      setUnansweredQuestions([]);
       window.location.reload();
     }
   };
@@ -131,29 +154,36 @@ const Survey: React.FC<SurveyProps> = ({
               <p>{(features[currentFeatureIndex] as any).description}</p>
             </div>
 
-            {questions.map((q: Question) => (
-              <div key={q.id} className='prioritizerSDK-question'>
-                <h2 className='prioritizerSDK-question-title'>{q.title}</h2>
-                <div className='prioritizerSDK-answers'>
-                  {q.answers.map((a: Answer) => {
-                    const isChecked = (q.id === 0 && selectedAnswers[currentFeatureIndex]?.positive === a.priority) ||
-                      (q.id === 1 && selectedAnswers[currentFeatureIndex]?.negative === a.priority);
-                    return (
-                      <div className='prioritizerSDK-answer' key={a.id}>
-                        <input
-                          type="radio"
-                          id={`answer-${(features[currentFeatureIndex] as any).id}_${q.id}_${a.id}`}
-                          name={`question_${q.id}`}
-                          checked={isChecked}
-                          onChange={() => handleChange(q.id, a)}
-                        />
-                        <label htmlFor={`answer-${(features[currentFeatureIndex] as any).id}_${q.id}_${a.id}`}>{a.title}</label>
-                      </div>
-                    );
-                  })}
+            {questions.map((q: Question) => {
+              const currentSelected = selectedAnswers[currentFeatureIndex] || {};
+              const hasAnswer = (q.id === 0 && currentSelected.positive !== undefined) ||
+                (q.id === 1 && currentSelected.negative !== undefined);
+              const isUnanswered = unansweredQuestions[currentFeatureIndex] || false;
+
+              return (
+                <div key={q.id} className={`prioritizerSDK-question ${isUnanswered && !hasAnswer ? 'unanswered' : ''}`}>
+                  <h2 className='prioritizerSDK-question-title'>{q.title}</h2>
+                  <div className='prioritizerSDK-answers'>
+                    {q.answers.map((a: Answer) => {
+                      const isChecked = (q.id === 0 && currentSelected.positive === a.priority) ||
+                        (q.id === 1 && currentSelected.negative === a.priority);
+                      return (
+                        <div className='prioritizerSDK-answer' key={a.id}>
+                          <input
+                            type="radio"
+                            id={`answer-${(features[currentFeatureIndex] as any).id}_${q.id}_${a.id}`}
+                            name={`question_${q.id}`}
+                            checked={isChecked}
+                            onChange={() => handleChange(q.id, a)}
+                          />
+                          <label htmlFor={`answer-${(features[currentFeatureIndex] as any).id}_${q.id}_${a.id}`}>{a.title}</label>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div className="prioritizerSDK-buttons">
               <button
                 disabled={currentFeatureIndex === 0}

@@ -156,3 +156,7 @@
     padding: 10px 0;
 }
 
+.unanswered {
+    border: 1px solid red;
+    background-color: #ffe6e6;
+}

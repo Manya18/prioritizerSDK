@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './Survey.css';
-import { Feature, Question, Answer, ResultsType } from '../types/types';
+import { Feature, Question, Answer, ResultsType, Choice } from '../types/types';
 
 type SurveyProps = {
   features: Feature[];
-  onSubmit: (results: ResultsType) => void;
+  onSubmit: (results: Choice[]) => void;
   borderColor?: string;
   borderHeaderColor?: string;
   buttonBackNextStyle?: React.CSSProperties;
@@ -24,7 +24,10 @@ const Survey: React.FC<SurveyProps> = ({
   textColor = '#000',
 }) => {
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
-  const [results, setResults] = useState<ResultsType>({});
+  const [results, setResults] = useState<Choice[]>([]);
+  const [positive, setPositive] = useState(0);
+  const [negative, setNegative] = useState(0);
+  const survey_id = 1;
 
   const questions: Question[] = [
     {
@@ -51,22 +54,18 @@ const Survey: React.FC<SurveyProps> = ({
     },
   ];
 
-  const handleChange = (feature: Feature, question: Question, answer: Answer) => {
-    setResults(prev => ({
-      ...prev,
-      [feature.id]: {
-        ...prev[feature.id],
-        [question.id]: answer,
-      },
-    }));
-    
+  const handleChange = (question_id: number, answer: Answer) => {
+    if (question_id === 0) setPositive(answer.priority)
+    else setNegative(answer.priority)
   };
 
   const nextFeature = () => {
+    debugger
+    setResults([ ...results, { positive: positive, negative: negative, feature_id: features[currentFeatureIndex].id!, survey_id: survey_id } ]);
     if (currentFeatureIndex < features.length - 1) {
       setCurrentFeatureIndex(prev => prev + 1);
     } else {
-      onSubmit(results); 
+      onSubmit(results);
     }
   };
 
@@ -90,15 +89,13 @@ const Survey: React.FC<SurveyProps> = ({
                 <h2 className='Survey-question-title'>{q.title}</h2>
                 <div className='Survey-answers'>
                   {q.answers.map((a: Answer) => {
-                    const checked = results[features[currentFeatureIndex].id]?.[q.id]?.id === a.id;
                     return (
                       <div className='Survey-answer' key={a.id}>
                         <input
                           type="radio"
                           id={`answer-${features[currentFeatureIndex].id}_${q.id}_${a.id}`}
                           name={`question_${q.id}`}
-                          onChange={() => handleChange(features[currentFeatureIndex], q, a)}
-                          checked={checked}
+                          onChange={() => handleChange(q.id, a)}
                         />
                         <label htmlFor={`answer-${features[currentFeatureIndex].id}_${q.id}_${a.id}`}>{a.title}</label>
                       </div>
@@ -108,13 +105,13 @@ const Survey: React.FC<SurveyProps> = ({
               </div>
             ))}
             <div className="Survey-buttons">
-              <button
+              {/* <button
                 disabled={currentFeatureIndex === 0}
                 className="Survey-backNextButton"
                 onClick={previousFeature}
                 style={buttonBackNextStyle}>
                 Назад
-              </button>
+              </button> */}
               <button
                 className={currentFeatureIndex < features.length - 1 ? "Survey-backNextButton" : "Survey-submitButton"}
                 onClick={nextFeature} style={buttonStyle}>

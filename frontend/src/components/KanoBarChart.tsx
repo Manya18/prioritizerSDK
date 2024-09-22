@@ -33,7 +33,7 @@ const KanoBarChart = ({ results, features }: { results: ResultsType, features: F
     <div className="kano-bar-chart">
       <h2>Распределение функций по модели Кано</h2>
       {features.map((feature) => {
-        const featureResults = results[feature.id];
+        const featureResults = results[feature.id!];
 
         if (featureResults) {
           const functionalAnswer = featureResults[0]?.priority ?? 0;

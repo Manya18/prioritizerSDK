@@ -1,5 +1,5 @@
-import React from 'react';
-import { Feature, ResultsType } from '../types/types';
+import React, { useState } from 'react';
+import { Choice, Feature, ResultsType } from '../types/types';
 
 type KanoCategory = 'Must-be' | 'Performance' | 'Questionabie' | 'Indifferent' | 'Reverse' | 'Attractive';
 
@@ -29,17 +29,37 @@ const getCellColor = (category: KanoCategory) => {
     }
 };
 
+const classifyChoices = (choices: Choice[]): { [key: number]: KanoCategory[] } => {
+    const featureMap: { [key: number]: KanoCategory[] } = {};
+
+    choices.forEach((choice) => {
+        const { positive, negative, feature_id } = choice;
+
+        const category = classifyKano(positive, negative);
+
+        if (!featureMap[feature_id]) {
+            featureMap[feature_id] = [];
+        }
+
+        featureMap[feature_id].push(category);
+    });
+
+    return featureMap;
+};
+
 const KanoTable = ({
-    results,
+    choices,
     features,
     cellStyles,
     tableStyle
 }: {
-    results: ResultsType,
+    choices: Choice[],
     features: Feature[],
     cellStyles?: { [key in KanoCategory]?: React.CSSProperties },
     tableStyle?: React.CSSProperties
 }) => {
+    const [category, setCategory] = useState([]);
+
     const defaultStyles = {
         'Performance': { backgroundColor: getCellColor('Performance') },
         'Must-be': { backgroundColor: getCellColor('Must-be') },
@@ -48,8 +68,10 @@ const KanoTable = ({
         'Indifferent': { backgroundColor: getCellColor('Indifferent') },
         'Reverse': { backgroundColor: getCellColor('Reverse') }
     };
+    console.log("eee", choices)
+    const categoryMap = classifyChoices(choices);
+    console.log(categoryMap)
 
-    console.log(results)
     return (
         <div className="kano-table">
             <h2>Таблица Кано</h2>
@@ -72,41 +94,27 @@ const KanoTable = ({
                 </thead>
                 <tbody>
                     {features.map((feature) => {
-                        const featureResults = results[feature.id];
+                        const categories = categoryMap[feature.id!] || [];
 
-                        if (featureResults && featureResults[0] && featureResults[1]) {
-                            const functionalAnswer = featureResults[0].priority;
-                            const dysfunctionalAnswer = featureResults[1].priority;
-
-                            const category = classifyKano(functionalAnswer, dysfunctionalAnswer);
-
-                            return (
-                                <tr key={feature.id}>
-                                    <td>{feature.title}</td>
-                                    <td style={category === 'Performance' ? { ...defaultStyles['Performance'], ...cellStyles?.['Performance'] } : {}}></td>
-                                    <td style={category === 'Must-be' ? { ...defaultStyles['Must-be'], ...cellStyles?.['Must-be'] } : {}}></td>
-                                    <td style={category === 'Attractive' ? { ...defaultStyles['Attractive'], ...cellStyles?.['Attractive'] } : {}}></td>
-                                    <td style={category === 'Questionabie' ? { ...defaultStyles['Questionabie'], ...cellStyles?.['Attractive'] } : {}}></td>
-                                    <td style={category === 'Indifferent' ? { ...defaultStyles['Indifferent'], ...cellStyles?.['Indifferent'] } : {}}></td>
-                                    <td style={category === 'Reverse' ? { ...defaultStyles['Reverse'], ...cellStyles?.['Reverse'] } : {}}></td>
-                                </tr>
-                            );
-                        } else {
-                            return (
-                                <tr key={feature.id}>
-                                    <td>{feature.title}</td>
-                                    <td colSpan={5} style={{ textAlign: 'center', color: 'red' }}>
-                                        Нет данных
-                                    </td>
-                                </tr>
-                            );
-                        }
+                        return (
+                            <tr key={feature.id}>
+                                <td>{feature.title}</td>
+                                <td style={categories.includes('Performance') ? { ...defaultStyles['Performance'], ...cellStyles?.['Performance'] } : {}}></td>
+                                <td style={categories.includes('Must-be') ? { ...defaultStyles['Must-be'], ...cellStyles?.['Must-be'] } : {}}></td>
+                                <td style={categories.includes('Attractive') ? { ...defaultStyles['Attractive'], ...cellStyles?.['Attractive'] } : {}}></td>
+                                <td style={categories.includes('Questionabie') ? { ...defaultStyles['Questionabie'], ...cellStyles?.['Attractive'] } : {}}></td>
+                                <td style={categories.includes('Indifferent') ? { ...defaultStyles['Indifferent'], ...cellStyles?.['Indifferent'] } : {}}></td>
+                                <td style={categories.includes('Reverse') ? { ...defaultStyles['Reverse'], ...cellStyles?.['Reverse'] } : {}}></td>
+                            </tr>
+                        );
                     })}
                 </tbody>
             </table>
         </div>
     );
 };
+
+
 
 
 export default KanoTable;

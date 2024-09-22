@@ -1,11 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Feature } from "../types/types";
 
-const CreateSurvey = ({ onSubmit } : {onSubmit: (surveyTitle: string, features: Feature[])=>void}) => {
+const CreateSurvey = () => {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [featureName, setFeatureName] = useState<string>("");
   const [featureDesc, setFeatureDesc] = useState<string>("");
   const [surveyTitle, setSurveyTitle] = useState<string>("");
+
+
+  const onSubmit = async (surveyTitle: string, featuresArray: Feature[]) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/survey`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: surveyTitle }),
+    });
+    const data = await response.json();
+    featuresArray.map(async (f: Feature) => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...f, ...{ survey_id: data.id } }),
+        });
+        if (!response.ok) throw new Error("Not ok");
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }
+
 
   const addFeature = () => {
     if (featureName && featureDesc) {

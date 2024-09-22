@@ -1,6 +1,13 @@
+export type Survey = {
+  id?: number;
+  title: string
+};
+
 export type Feature = {
-  id: number;
+  id?: number;
   title: string;
+  description: string;
+  survey_id: number
 };
 
 export type Question = {
@@ -22,7 +29,9 @@ export type ResultsType = {
 }
 
 export type Choice = {
-  priority: number;
+  id?: number;
+  positive: number;
+  negative: number;
   feature_id: number;
-  is_positive: boolean;
+  survey_id: number
 };

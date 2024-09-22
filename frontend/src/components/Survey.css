@@ -3,6 +3,7 @@
     border-radius: 8px;
     width: fit-content;
     position: relative;
+    max-width: 600px;
 }
 
 .prioritizerSDK-header {

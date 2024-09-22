@@ -8,12 +8,12 @@ import CreateSurvey from "./components/CreateSurvey";
 import MoSCoWTable from "./components/MoSCoW";
 
 function App() {
-  const survey_id = "3";
+  const survey_id = "7";
 
   return (
     <div className="App">
       <Survey
-        survey_id="3"
+        survey_id={survey_id}
         buttonBackNextStyle={{ backgroundColor: "lightgray", color: "black" }}
         buttonStyle={{ backgroundColor: "blue", color: "white" }}
       />

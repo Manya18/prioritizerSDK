@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db
+    image: postgres:15.4-alpine
+    restart: always
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./database/.data:/var/lib/postgresql/data
+      - ./database.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+
+  backend:
+    container_name: prioritizerSDK-backend
+    build:
+      context: ./
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: your_db_user
+      DB_PASSWORD: your_db_password
+      DB_NAME: your_db_name

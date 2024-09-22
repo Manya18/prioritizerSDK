@@ -59,10 +59,19 @@
     cursor: pointer;
     margin-top: 10px;
     margin-bottom: 20px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .prioritizerSDK-backNextButton:disabled {
     display: none;
+}
+
+.prioritizerSDK-backNextButton:hover {
+    background-color: #bbb;
+}
+
+.prioritizerSDK-backNextButton:active {
+    transform: scale(0.97);
 }
 
 .prioritizerSDK-submitButton {
@@ -76,9 +85,18 @@
     position: absolute;
     right: 20px;
     bottom: 20px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
-.prioritizerSDK-button{
+.prioritizerSDK-submitButton:hover {
+    background-color: #0036cc;
+}
+
+.prioritizerSDK-submitButton:active {
+    transform: scale(0.97);
+}
+
+.prioritizerSDK-button {
     padding: 8px 20px;
     font-size: 12px;
     background-color: #0047FF;
@@ -88,7 +106,53 @@
     cursor: pointer;
     margin-bottom: 10px;
     width: fit-content;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
-.prioritizerSDK-button.centred{
+
+.prioritizerSDK-button.centred {
     align-self: center;
 }
+
+.prioritizerSDK-button:hover {
+    background-color: #0036cc;
+}
+
+.prioritizerSDK-button:active {
+    transform: scale(0.97);
+}
+
+.prioritizerSDK-decription-toggle {
+    cursor: pointer;
+    color: #0047FF;
+    transition: color 0.3s ease;
+}
+
+.prioritizerSDK-decription-toggle:hover {
+    color: #0036cc;
+}
+
+
+.prioritizerSDK-feature {
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.prioritizerSDK-feature:hover {
+    color: #0036cc;
+}
+
+.prioritizerSDK-decription {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.prioritizerSDK-decription.open {
+    max-height: 200px;
+}
+
+.prioritizerSDK-decription p {
+    margin: 0;
+    padding: 10px 0;
+}
+

@@ -4,42 +4,30 @@ import { Feature, Question, Answer, ResultsType, Choice } from '../types/types';
 
 type SurveyProps = {
   survey_id: string,
-  borderColor?: string;
-  borderHeaderColor?: string;
-  buttonBackNextStyle?: React.CSSProperties;
-  buttonStyle?: React.CSSProperties;
-  backgroundColor?: string;
-  textColor?: string;
 };
 
 const Survey: React.FC<SurveyProps> = ({
   survey_id,
-  borderColor,
-  borderHeaderColor,
-  buttonBackNextStyle,
-  buttonStyle,
-  backgroundColor = '#fff',
-  textColor = '#000',
 }) => {
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [results, setResults] = useState<Choice[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: { positive?: number; negative?: number } }>({});
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); 
   const [features, setFeatures] = useState([]);
 
   useEffect(() => {
     const fetchFeatures = async () => {
-        try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
-          if (!response.ok) {
-            throw new Error("Trouble");
-          }
-          const data = await response.json();
-          setFeatures(data);
-        } catch (error) {
-            throw new Error("Trouble");
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
+        if (!response.ok) {
+          throw new Error("Trouble");
         }
-      };
+        const data = await response.json();
+        setFeatures(data);
+      } catch (error) {
+        throw new Error("Trouble");
+      }
+    };
     fetchFeatures();
   }, []);
 
@@ -68,23 +56,6 @@ const Survey: React.FC<SurveyProps> = ({
     },
   ];
 
-  const createChoices = (choicesArray: Choice[]) => {
-    choicesArray.map(async (f: Choice) => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/choice`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(f),
-        });
-        if (!response.ok) throw new Error("Not ok");
-      } catch (error) {
-        console.error(error);
-      }
-    });
-  };
-
   const handleChange = (question_id: number, answer: Answer) => {
     const newAnswers = { ...selectedAnswers };
     if (!newAnswers[currentFeatureIndex]) newAnswers[currentFeatureIndex] = {};
@@ -107,12 +78,6 @@ const Survey: React.FC<SurveyProps> = ({
     if (currentFeatureIndex < features.length - 1) {
       setCurrentFeatureIndex(prev => prev + 1);
     } else {
-      createChoices([...results, {
-        positive: currentSelected.positive || 0,
-        negative: currentSelected.negative || 0,
-        feature_id: (features[currentFeatureIndex] as any).id,
-        survey_id: Number(survey_id)
-      }]);
       setCurrentFeatureIndex(0);
       setResults([]);
       setSelectedAnswers({});
@@ -127,18 +92,21 @@ const Survey: React.FC<SurveyProps> = ({
   };
 
   return (
-    <div className="prioritizerSDK-container" style={{ borderColor, backgroundColor, color: textColor }}>
-      <header className='prioritizerSDK-header' style={{ border: borderHeaderColor }}>
+    <div className="prioritizerSDK-container">
+      <header className='prioritizerSDK-header'>
         <h1 className='prioritizerSDK-title'>Пройдите опрос</h1>
       </header>
       <main className='prioritizerSDK-content'>
         {features.length > 0 && (
           <div className='feature'>
-            <h3 className='prioritizerSDK-feature'>{(features[currentFeatureIndex] as any).title}</h3>
-            {(features[currentFeatureIndex] as any).description.length > 0 && <div className='prioritizerSDK-decription'>
-              <div className='' onClick={() => setIsOpen(!isOpen)}>Описание ↓</div>
-              <div className=''style={{display: isOpen ? 'block' : 'none'}}>{(features[currentFeatureIndex] as any).description}</div>
-            </div>}
+            <h3 className='prioritizerSDK-feature' onClick={() => setIsOpen(!isOpen)}>
+              {(features[currentFeatureIndex] as any).title} {isOpen ? '↑' : '↓'}
+            </h3>
+
+            <div className={`prioritizerSDK-decription ${isOpen ? 'open' : ''}`}>
+              <p>{(features[currentFeatureIndex] as any).description}</p>
+            </div>
+
             {questions.map((q: Question) => (
               <div key={q.id} className='prioritizerSDK-question'>
                 <h2 className='prioritizerSDK-question-title'>{q.title}</h2>
@@ -166,13 +134,12 @@ const Survey: React.FC<SurveyProps> = ({
               <button
                 disabled={currentFeatureIndex === 0}
                 className="prioritizerSDK-backNextButton"
-                onClick={previousFeature}
-                style={buttonBackNextStyle}>
+                onClick={previousFeature}>
                 Назад
               </button>
               <button
                 className={currentFeatureIndex < features.length - 1 ? "prioritizerSDK-backNextButton" : "prioritizerSDK-submitButton"}
-                onClick={nextFeature} style={currentFeatureIndex < features.length - 1 ? buttonBackNextStyle : buttonStyle}>
+                onClick={nextFeature}>
                 {currentFeatureIndex < features.length - 1 ? 'Далее' : 'Отправить'}
               </button>
             </div>

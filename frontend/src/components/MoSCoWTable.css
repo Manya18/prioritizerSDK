@@ -1,31 +1,30 @@
-.kano-table {
+.moscow-table {
   margin: 20px;
   font-family: Arial, sans-serif;
 }
 
-.kano-table h2 {
+.moscow-table h2 {
   text-align: center;
   margin-bottom: 15px;
 }
 
-.kano-table table {
+.moscow-table table {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #ddd;
 }
 
-.kano-table th,
-.kano-table td {
+.moscow-table th, .moscow-table td {
   padding: 10px;
   text-align: center;
   border: 1px solid #ddd;
 }
 
-.kano-table th {
+.moscow-table th {
   background-color: #f4f4f4;
   font-weight: bold;
 }
 
-.kano-table td.highlight {
+.moscow-table td.highlight {
   background-color: lightgreen;
 }

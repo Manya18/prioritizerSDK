@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Choice, Feature } from '../types/types';
+import { Choice } from '../types/types';
+import './KanoBarChart.css';
 
 const classifyKano = (functional: number, dysfunctional: number): number => {
-  if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 0; // Questionable
-  if (functional === 4 && dysfunctional <= 2) return 1; // Attractive
-  if (functional === 4 && dysfunctional === 4) return 2; // Performance
-  if (functional <= 2 && dysfunctional === 4) return 3; // Must-be
-  if ((functional <= 2 && dysfunctional === 4) || (functional === -2 && dysfunctional <= 2)) return 4; // Reverse
-  return 5; // Indifferent
+  if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 0;
+  if (functional === 4 && dysfunctional <= 2) return 1;
+  if (functional === 4 && dysfunctional === 4) return 2;
+  if (functional <= 2 && dysfunctional === 4) return 3;
+  if ((functional <= 2 && dysfunctional === 4) || (functional === -2 && dysfunctional <= 2)) return 4;
+  return 5;
 };
 
 const categories = ['Questionable', 'Attractive', 'Performance', 'Must-be', 'Reverse', 'Indifferent'];
-const colors = ['blue', 'orange', 'yellow', 'red', 'purple', 'gray'];
 
 const classifyChoices = (choices: Choice[]): { [key: number]: number[] } => {
   const featureMap: { [key: number]: number[] } = {};
@@ -40,31 +40,30 @@ const KanoBarChart = ({ survey_id }: { survey_id: string }) => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/choice`
-        );
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/choice`);
         if (!response.ok) {
           throw new Error("Trouble");
         }
         const data = await response.json();
-
         setChoices(data);
       } catch (error) {
         throw new Error("Trouble");
       }
     };
+
     const fetchFeatures = async () => {
-        try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
-          if (!response.ok) {
-            throw new Error("Trouble");
-          }
-          const data = await response.json();
-          setFeatures(data);
-        } catch (error) {
-            throw new Error("Trouble");
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
+        if (!response.ok) {
+          throw new Error("Trouble");
         }
-      };
+        const data = await response.json();
+        setFeatures(data);
+      } catch (error) {
+        throw new Error("Trouble");
+      }
+    };
+
     fetchResults();
     fetchFeatures();
   }, []);
@@ -79,9 +78,9 @@ const KanoBarChart = ({ survey_id }: { survey_id: string }) => {
         const totalResponses = summCat(categoriesForFeature);
 
         return (
-          <div key={(feature as any).id} style={{ display: 'flex', margin: '20px' }}>
-            <div title={(feature as any).title} style={{ marginRight: '6px', maxWidth: '100px', textOverflow: 'ellipsis' }}>{(feature as any).title}</div>
-            <div className="kano-bar" style={{ display: 'flex', height: '30px', width: '100%' }}>
+          <div key={(feature as any).id} className="kano-feature-row">
+            <div className="kano-feature-title">{(feature as any).title}</div>
+            <div className="kano-bar">
               {categories.map((cat, index) => {
                 const count = categoriesForFeature[index];
                 const percentage = totalResponses > 0 ? (count * 100) / totalResponses : 0;
@@ -89,14 +88,8 @@ const KanoBarChart = ({ survey_id }: { survey_id: string }) => {
                 return (
                   <div
                     key={cat}
-                    style={{
-                      backgroundColor: colors[index],
-                      width: `${percentage.toFixed(2)}%`,
-                      textAlign: 'center',
-                      lineHeight: '30px',
-                      color: 'black',
-                      fontSize: '12px',
-                    }}
+                    className={`kano-bar-segment kano-color-${index}`}
+                    style={{ width: `${percentage.toFixed(2)}%` }}
                   >
                     {percentage > 0 ? `${percentage.toFixed(2)}%` : ''}
                   </div>
@@ -107,17 +100,10 @@ const KanoBarChart = ({ survey_id }: { survey_id: string }) => {
         );
       })}
 
-      <div className="kano-legend" style={{ display: 'flex', gap: '20px', margin: '20px', justifyContent: 'center' }}>
+      <div className="kano-legend">
         {categories.map((cat, index) => (
-          <div key={cat} style={{ display: 'flex', alignItems: 'center' }}>
-            <div
-              style={{
-                backgroundColor: colors[index],
-                width: '20px',
-                height: '20px',
-                marginRight: '10px',
-              }}
-            ></div>
+          <div key={cat} className="kano-legend-item">
+            <div className={`kano-legend-color kano-color-${index}`}></div>
             <span>{cat}</span>
           </div>
         ))}

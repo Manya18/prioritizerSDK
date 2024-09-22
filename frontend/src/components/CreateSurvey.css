@@ -1,0 +1,97 @@
+* {
+  box-sizing: border-box;
+}
+
+.prioritizerSDK-content {
+  width: 100%;
+}
+
+.prioritizerSDK-container {
+  margin: 20px;
+}
+
+.prioritizerSDK-header {
+  margin-bottom: 20px;
+}
+
+.prioritizerSDK-title {
+  font-size: 24px;
+  text-align: center;
+}
+
+.prioritizerSDK-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+}
+
+.input-label,
+.feature-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.input-field,
+.feature-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.feature-create {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.feature-input-group {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+}
+
+.feature-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.feature-item {
+  margin: 5px 0;
+}
+
+.prioritizerSDK-button {
+  padding: 10px 15px;
+  margin: 5px;
+  background-color: #0047FF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.prioritizerSDK-button.centred {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.prioritizerSDK-button.small {
+  padding: 5px 10px;
+  font-size: 12px;
+  margin-left: 10px;
+  width: 80px;
+}
+
+
+.prioritizerSDK-button:hover {
+  background-color: #0056b3;
+}

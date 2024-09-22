@@ -1,14 +1,15 @@
 import React from 'react';
 import { Feature, ResultsType } from '../types/types';
 
-type KanoCategory = 'Must-be' | 'Performance' | 'Excitement' | 'Indifferent' | 'Reverse';
+type KanoCategory = 'Must-be' | 'Performance' | 'Questionabie' | 'Indifferent' | 'Reverse' | 'Attractive';
 
 const classifyKano = (functional: number, dysfunctional: number): KanoCategory => {
-    if (functional === 4 && dysfunctional === -2) return 'Excitement';
-    if (functional === 2 && dysfunctional <= 0) return 'Performance';
-    if (functional === 0 && dysfunctional === 0) return 'Indifferent';
-    if (functional === -2 && dysfunctional === 4) return 'Reverse';
-    return 'Must-be';
+    if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 'Questionabie';
+    if (functional === 4 && dysfunctional <= 2) return 'Attractive';
+    if (functional === 4 && dysfunctional === 4) return 'Performance';
+    if (functional <= 2 && dysfunctional === 4) return 'Must-be';
+    if ((functional <= 2 && dysfunctional === 4) || (functional === -2 && dysfunctional <= 2)) return 'Reverse';
+    return 'Indifferent';
 };
 
 const getCellColor = (category: KanoCategory) => {
@@ -17,7 +18,7 @@ const getCellColor = (category: KanoCategory) => {
             return 'green';
         case 'Performance':
             return 'yellow';
-        case 'Excitement':
+        case 'Questionabie':
             return 'blue';
         case 'Indifferent':
             return 'gray';
@@ -40,9 +41,10 @@ const KanoTable = ({
     tableStyle?: React.CSSProperties
 }) => {
     const defaultStyles = {
-        'Must-be': { backgroundColor: getCellColor('Must-be') },
         'Performance': { backgroundColor: getCellColor('Performance') },
-        'Excitement': { backgroundColor: getCellColor('Excitement') },
+        'Must-be': { backgroundColor: getCellColor('Must-be') },
+        'Questionabie': { backgroundColor: getCellColor('Questionabie') },
+        'Attractive': { backgroundColor: getCellColor('Attractive') },
         'Indifferent': { backgroundColor: getCellColor('Indifferent') },
         'Reverse': { backgroundColor: getCellColor('Reverse') }
     };
@@ -60,11 +62,12 @@ const KanoTable = ({
                 <thead>
                     <tr>
                         <th>Функция</th>
+                        <th>Важные</th>
                         <th>Обязательные</th>
-                        <th>Ожидаемые</th>
-                        <th>Волнующие</th>
+                        <th>Интересные</th>
+                        <th>Сомнительные</th>
                         <th>Безразличные</th>
-                        <th>Противоположные</th>
+                        <th>Противоречивые</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,9 +83,10 @@ const KanoTable = ({
                             return (
                                 <tr key={feature.id}>
                                     <td>{feature.title}</td>
-                                    <td style={category === 'Must-be' ? { ...defaultStyles['Must-be'], ...cellStyles?.['Must-be'] } : {}}></td>
                                     <td style={category === 'Performance' ? { ...defaultStyles['Performance'], ...cellStyles?.['Performance'] } : {}}></td>
-                                    <td style={category === 'Excitement' ? { ...defaultStyles['Excitement'], ...cellStyles?.['Excitement'] } : {}}></td>
+                                    <td style={category === 'Must-be' ? { ...defaultStyles['Must-be'], ...cellStyles?.['Must-be'] } : {}}></td>
+                                    <td style={category === 'Attractive' ? { ...defaultStyles['Attractive'], ...cellStyles?.['Attractive'] } : {}}></td>
+                                    <td style={category === 'Questionabie' ? { ...defaultStyles['Questionabie'], ...cellStyles?.['Attractive'] } : {}}></td>
                                     <td style={category === 'Indifferent' ? { ...defaultStyles['Indifferent'], ...cellStyles?.['Indifferent'] } : {}}></td>
                                     <td style={category === 'Reverse' ? { ...defaultStyles['Reverse'], ...cellStyles?.['Reverse'] } : {}}></td>
                                 </tr>

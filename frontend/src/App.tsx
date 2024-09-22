@@ -97,7 +97,8 @@ function App() {
         cellStyles={{
           'Must-be': { backgroundColor: 'lightgreen' },
           'Performance': { backgroundColor: 'lightgreen' },
-          'Excitement': { backgroundColor: 'lightgreen' },
+          'Questionabie': { backgroundColor: 'lightgreen' },
+          'Attractive': { backgroundColor: 'lightgreen' },
           'Indifferent': { backgroundColor: 'lightgreen' },
           'Reverse': { backgroundColor: 'lightgreen' }
         }}

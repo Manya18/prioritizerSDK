@@ -11,6 +11,7 @@ function App() {
   const [surveyResults, setSurveyResults] = useState<Choice[]>([]);
   const [features, setFeatures] = useState([]);
   const [error, setError] = useState<any>(null);
+  const survey_id = 4;
 
   const onSubmit = (results: Choice[]) => {
     setSurveyResults(results);
@@ -63,7 +64,7 @@ function App() {
   useEffect(() => {
     const fetchFeatures = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/feature");
+        const response = await fetch(`http://localhost:8080/api/feature/${survey_id}`);
         if (!response.ok) {
           throw new Error("Trouble");
         }

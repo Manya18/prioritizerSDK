@@ -5,6 +5,7 @@ import KanoTable from "./components/KanoTable";
 import KanoBarChart from "./components/KanoBarChart";
 import { Answer, Choice, Feature, ResultsType } from "./types/types";
 import CreateSurvey from "./components/CreateSurvey";
+import MoSCoWTable from "./components/MoSCoW";
 
 function App() {
   const [surveyResults, setSurveyResults] = useState<Choice[]>([]);
@@ -101,6 +102,17 @@ function App() {
       />
 
       <KanoTable
+        choices={surveyResults}
+        features={features}
+        tableStyle={{
+          width: '100%',
+          backgroundColor: '#f8f8f8',
+          color: '#333',
+          textAlign: 'center',
+          fontSize: '16px'
+        }}
+      />
+      <MoSCoWTable
         choices={surveyResults}
         features={features}
         tableStyle={{

@@ -25,8 +25,7 @@ const Survey: React.FC<SurveyProps> = ({
 }) => {
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
   const [results, setResults] = useState<Choice[]>([]);
-  const [positive, setPositive] = useState(0);
-  const [negative, setNegative] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: { positive?: number; negative?: number } }>({});
   const survey_id = 1;
 
   const questions: Question[] = [
@@ -55,18 +54,36 @@ const Survey: React.FC<SurveyProps> = ({
   ];
 
   const handleChange = (question_id: number, answer: Answer) => {
-    if (question_id === 0) setPositive(answer.priority)
-    else setNegative(answer.priority)
+    const newAnswers = { ...selectedAnswers };
+    if (!newAnswers[currentFeatureIndex]) newAnswers[currentFeatureIndex] = {};
+
+    if (question_id === 0) newAnswers[currentFeatureIndex].positive = answer.priority;
+    else newAnswers[currentFeatureIndex].negative = answer.priority;
+
+    setSelectedAnswers(newAnswers);
   };
 
   const nextFeature = () => {
-    setResults([...results, { positive: positive, negative: negative, feature_id: features[currentFeatureIndex].id!, survey_id: survey_id }]);
+    const currentSelected = selectedAnswers[currentFeatureIndex] || {};
+    setResults([...results, {
+      positive: currentSelected.positive || 0,
+      negative: currentSelected.negative || 0,
+      feature_id: features[currentFeatureIndex].id!,
+      survey_id: survey_id
+    }]);
+
     if (currentFeatureIndex < features.length - 1) {
       setCurrentFeatureIndex(prev => prev + 1);
     } else {
-      onSubmit([...results, { positive: positive, negative: negative, feature_id: features[currentFeatureIndex].id!, survey_id: survey_id }]);
+      onSubmit([...results, {
+        positive: currentSelected.positive || 0,
+        negative: currentSelected.negative || 0,
+        feature_id: features[currentFeatureIndex].id!,
+        survey_id: survey_id
+      }]);
       setCurrentFeatureIndex(0);
       setResults([]);
+      setSelectedAnswers({});
       window.location.reload();
     }
   };
@@ -91,12 +108,15 @@ const Survey: React.FC<SurveyProps> = ({
                 <h2 className='prioritizerSDK-question-title'>{q.title}</h2>
                 <div className='prioritizerSDK-answers'>
                   {q.answers.map((a: Answer) => {
+                    const isChecked = (q.id === 0 && selectedAnswers[currentFeatureIndex]?.positive === a.priority) ||
+                      (q.id === 1 && selectedAnswers[currentFeatureIndex]?.negative === a.priority);
                     return (
                       <div className='prioritizerSDK-answer' key={a.id}>
                         <input
                           type="radio"
                           id={`answer-${features[currentFeatureIndex].id}_${q.id}_${a.id}`}
                           name={`question_${q.id}`}
+                          checked={isChecked}
                           onChange={() => handleChange(q.id, a)}
                         />
                         <label htmlFor={`answer-${features[currentFeatureIndex].id}_${q.id}_${a.id}`}>{a.title}</label>
@@ -106,18 +126,17 @@ const Survey: React.FC<SurveyProps> = ({
                 </div>
               </div>
             ))}
-
             <div className="prioritizerSDK-buttons">
               <button
                 disabled={currentFeatureIndex === 0}
-                className="Survey-backNextButton"
+                className="prioritizerSDK-backNextButton"
                 onClick={previousFeature}
                 style={buttonBackNextStyle}>
                 Назад
               </button>
               <button
                 className={currentFeatureIndex < features.length - 1 ? "prioritizerSDK-backNextButton" : "prioritizerSDK-submitButton"}
-                onClick={nextFeature} style={buttonStyle}>
+                onClick={nextFeature} style={currentFeatureIndex < features.length - 1 ? buttonBackNextStyle : buttonStyle}>
                 {currentFeatureIndex < features.length - 1 ? 'Далее' : 'Отправить'}
               </button>
             </div>

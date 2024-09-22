@@ -3,7 +3,9 @@ import "./App.css";
 import Survey from "./components/Survey";
 import KanoTable from "./components/KanoTable";
 import KanoBarChart from "./components/KanoBarChart";
-import { Answer, Feature, ResultsType } from "./types/types";
+import { Answer, Choice, Feature, ResultsType } from "./types/types";
+import { convertChoicesToResults } from "./logic/convertChoicesToResults";
+import { convertResultsToChoicesArray } from "./logic/convertResultsToChoices";
 
 function App() {
   const [surveyResults, setSurveyResults] = useState<ResultsType>({});
@@ -11,65 +13,62 @@ function App() {
   const [error, setError] = useState<any>(null);
 
   const onSubmit = (results: ResultsType) => {
-    setSurveyResults(results);
+    sendChoices(convertResultsToChoicesArray(results));
+    fetchResults();
+    window.location.reload();
   };
 
-  const convertChoicesToResults = (
-    choices: Array<{
-      id: number;
-      priority: number;
-      feature_id: number;
-      is_positive: boolean;
-    }>
-  ): ResultsType => {
-    return choices.reduce((acc: ResultsType, choice) => {
-      const { feature_id, is_positive, id, priority } = choice;
-
-      if (!acc[feature_id]) {
-        acc[feature_id] = {};
+  const sendChoices = async (choices: Choice[]) => {
+    for(const choice of choices){
+      try {
+        const response = await fetch('http://localhost:8080/api/choice', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(choice)
+      });
+  
+      if (!response.ok) {
+          throw new Error('Ошибка при отправке данных на сервер');
       }
+  
+      const result = await response.json();
+      console.log('Данные успешно отправлены:', result);
+      } catch (error: any) {
+        console.error('Ошибка:', error);
+      }
+  
+    }
+  }
+  const fetchResults = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/choice");
+      if (!response.ok) {
+        throw new Error("Trouble");
+      }
+      const data = await response.json();
 
-      const question_id = is_positive ? 1 : 0;
+      setSurveyResults(convertChoicesToResults(data));
+    } catch (error) {
+      setError(error);
+    }
+  };
 
-      const answer: Answer = {
-        id,
-        title: is_positive ? "Positive" : "Negative",
-        priority,
-      };
-
-      acc[feature_id][question_id] = answer;
-
-      return acc;
-    }, {});
+  const fetchFeatures = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/feature");
+      if (!response.ok) {
+        throw new Error("Trouble");
+      }
+      const data = await response.json();
+      setFeatures(data);
+    } catch (error) {
+      setError(error);
+    }
   };
 
   useEffect(() => {
-    const fetchFeatures = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/feature");
-        if (!response.ok) {
-          throw new Error("Trouble");
-        }
-        const data = await response.json();
-        setFeatures(data);
-      } catch (error) {
-        setError(error);
-      }
-    };
-
-    const fetchResults = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/choice");
-        if (!response.ok) {
-          throw new Error("Trouble");
-        }
-        const data = await response.json();
-
-        setSurveyResults(convertChoicesToResults(data));
-      } catch (error) {
-        setError(error);
-      }
-    };
     fetchResults();
     fetchFeatures();
   }, []);

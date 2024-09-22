@@ -20,3 +20,9 @@ export type ResultsType = {
     [question_id: number]: Answer;
   }
 }
+
+export type Choice = {
+  priority: number;
+  feature_id: number;
+  is_positive: boolean;
+};

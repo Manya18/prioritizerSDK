@@ -3,6 +3,7 @@ const router = new Router()
 const surveyController = require('../controllers/survey.controller')
 
 router.post('/survey', surveyController.createSurvey);
-router.get('/survey', surveyController.getSurvey);
+router.get('/surveis', surveyController.getSurveis);
+router.get('/survey/:id', surveyController.getSurvey);
 
 module.exports = router

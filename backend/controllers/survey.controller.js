@@ -11,13 +11,23 @@ class SurveyController{
             return res.status(400).json({ message: "Не удалось записать опрос" });
         }
     }
-    async getSurvey(req, res){
+    async getSurveis(req, res){
         try {
             const surveis = await db.query('SELECT * FROM survey')
             res.json(surveis.rows)
         }
         catch(e) {
-            return res.status(400).json({ message: "Не удалось найти ответы" });
+            return res.status(400).json({ message: "Не удалось найти опросы" });
+        }
+    }
+    async getSurvey(req, res){
+        const id = req.params.id;
+        try {
+            const surveis = await db.query('SELECT (title) FROM survey WHERE id=$1', [id]);
+            res.json(surveis.rows[0]);
+        }
+        catch(e) {
+            return res.status(400).json({ message: "Не удалось найти опрос" });
         }
     }
 }

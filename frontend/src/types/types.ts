@@ -7,7 +7,7 @@ export type Feature = {
   id?: number;
   title: string;
   description: string;
-  survey_id: number
+  survey_id?: number
 };
 
 export type Question = {

@@ -65,7 +65,8 @@ const Survey: React.FC<SurveyProps> = ({
       setCurrentFeatureIndex(prev => prev + 1);
     } else {
       onSubmit([...results, { positive: positive, negative: negative, feature_id: features[currentFeatureIndex].id!, survey_id: survey_id }]);
-      //setResults([]);
+      setCurrentFeatureIndex(0);
+      setResults([]);
       window.location.reload();
     }
   };
@@ -77,21 +78,21 @@ const Survey: React.FC<SurveyProps> = ({
   };
 
   return (
-    <div className="Survey" style={{ borderColor, backgroundColor, color: textColor }}>
-      <header className='Survey-header' style={{ border: borderHeaderColor }}>
-        <h1 className='Survey-title'>Пройдите опрос</h1>
+    <div className="prioritizerSDK-container" style={{ borderColor, backgroundColor, color: textColor }}>
+      <header className='prioritizerSDK-header' style={{ border: borderHeaderColor }}>
+        <h1 className='prioritizerSDK-title'>Пройдите опрос</h1>
       </header>
-      <main className='Survey-content'>
+      <main className='prioritizerSDK-content'>
         {features.length > 0 && (
           <div className='feature'>
-            <h3 className='Survey-feature'>{features[currentFeatureIndex].title}</h3>
+            <h3 className='prioritizerSDK-feature'>{features[currentFeatureIndex].title}</h3>
             {questions.map((q: Question) => (
-              <div key={q.id} className='Survey-question'>
-                <h2 className='Survey-question-title'>{q.title}</h2>
-                <div className='Survey-answers'>
+              <div key={q.id} className='prioritizerSDK-question'>
+                <h2 className='prioritizerSDK-question-title'>{q.title}</h2>
+                <div className='prioritizerSDK-answers'>
                   {q.answers.map((a: Answer) => {
                     return (
-                      <div className='Survey-answer' key={a.id}>
+                      <div className='prioritizerSDK-answer' key={a.id}>
                         <input
                           type="radio"
                           id={`answer-${features[currentFeatureIndex].id}_${q.id}_${a.id}`}
@@ -105,7 +106,7 @@ const Survey: React.FC<SurveyProps> = ({
                 </div>
               </div>
             ))}
-            <div className="Survey-buttons">
+            <div className="prioritizerSDK-buttons">
               {/* <button
                 disabled={currentFeatureIndex === 0}
                 className="Survey-backNextButton"
@@ -114,7 +115,7 @@ const Survey: React.FC<SurveyProps> = ({
                 Назад
               </button> */}
               <button
-                className={currentFeatureIndex < features.length - 1 ? "Survey-backNextButton" : "Survey-submitButton"}
+                className={currentFeatureIndex < features.length - 1 ? "prioritizerSDK-backNextButton" : "prioritizerSDK-submitButton"}
                 onClick={nextFeature} style={buttonStyle}>
                 {currentFeatureIndex < features.length - 1 ? 'Далее' : 'Отправить'}
               </button>

@@ -4,6 +4,7 @@ import Survey from "./components/Survey";
 import KanoTable from "./components/KanoTable";
 import KanoBarChart from "./components/KanoBarChart";
 import { Answer, Choice, Feature, ResultsType } from "./types/types";
+import CreateSurvey from "./components/CreateSurvey";
 
 function App() {
   const [surveyResults, setSurveyResults] = useState<Choice[]>([]);
@@ -15,7 +16,31 @@ function App() {
     createChoices(results);
   };
 
-
+  const createSurvey = async (surveyTitle: string, featuresArray: Feature[]) => {
+    // создавать опрос, получать айди опроса и передавать в body    
+    const response = await fetch("http://localhost:8080/api/survey", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({title: surveyTitle}),
+    });
+    const data = await response.json();
+      featuresArray.map(async (f: Feature) => {
+        try {
+          const response = await fetch("http://localhost:8080/api/feature", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({...f, ...{survey_id: data.id}}),
+          });
+          if (!response.ok) throw new Error("Not ok");
+        } catch (error) {
+          console.error(error);
+        }
+      });
+  }
 
   const createChoices = (choicesArray: Choice[]) => {
     choicesArray.map(async (f: Choice) => {
@@ -96,6 +121,7 @@ function App() {
       />
 
       <KanoBarChart results={surveyResults} features={features} />
+      <CreateSurvey onSubmit={createSurvey}></CreateSurvey>
     </div>
   );
 }

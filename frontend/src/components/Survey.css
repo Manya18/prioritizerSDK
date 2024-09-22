@@ -1,54 +1,54 @@
-.Survey {
+.prioritizerSDK-container {
     border: 1px solid #0047FF;
     border-radius: 8px;
     width: fit-content;
     position: relative;
 }
 
-.Survey-header {
+.prioritizerSDK-header {
     padding: 15px 20px;
     border-bottom: 2px solid #0047FF;
 }
 
-.Survey-title {
+.prioritizerSDK-title {
     font-size: 20px;
     font-weight: 400;
 }
 
-.Survey-content {
+.prioritizerSDK-content {
     display: flex;
     flex-direction: column;
     padding: 0 20px;
 }
 
-.Survey-question {
+.prioritizerSDK-question {
     padding: 7px;
 }
 
-.Survey-feature {
+.prioritizerSDK-feature {
     font-size: 18px;
     margin-top: 15px;
     margin-bottom: 0;
 }
 
-.Survey-question-title {
+.prioritizerSDK-question-title {
     font-size: 18px;
     font-weight: 400;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.Survey-answers {
+.prioritizerSDK-answers {
     display: flex;
     flex-direction: column;
     gap: 7px;
 }
 
-.Survey-answer {
+.prioritizerSDK-answer {
     font-size: 16px;
 }
 
-.Survey-backNextButton {
+.prioritizerSDK-backNextButton {
     padding: 10px 20px;
     font-size: 14px;
     background-color: #ddd;
@@ -60,11 +60,11 @@
     margin-bottom: 20px;
 }
 
-.Survey-backNextButton:disabled {
+.prioritizerSDK-backNextButton:disabled {
     display: none;
 }
 
-.Survey-submitButton {
+.prioritizerSDK-submitButton {
     padding: 10px 23px;
     font-size: 16px;
     background-color: #0047FF;
@@ -75,4 +75,19 @@
     position: absolute;
     right: 20px;
     bottom: 20px;
+}
+
+.prioritizerSDK-button{
+    padding: 8px 20px;
+    font-size: 12px;
+    background-color: #0047FF;
+    color: white;
+    border-radius: 13px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+    width: fit-content;
+}
+.prioritizerSDK-button.centred{
+    align-self: center;
 }

@@ -55,7 +55,6 @@ const KanoBarChart = ({ survey_id }: { survey_id: string }) => {
     };
     const fetchFeatures = async () => {
         try {
-          console.log(process.env.REACT_APP_API_URL)
           const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
           if (!response.ok) {
             throw new Error("Trouble");

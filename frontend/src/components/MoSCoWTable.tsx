@@ -3,13 +3,32 @@ import './MoSCoWTable.css';
 import { Choice, Feature } from '../types/types';
 
 const classifyMoSCoW = (functional: number, dysfunctional: number): string => {
-    if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 'Must';
-    if (functional === 4 && dysfunctional <= 2) return 'Must';
-    if (functional === 4 && dysfunctional === 4) return 'Should';
-    if (functional <= 2 && dysfunctional === 4) return 'Could';
-    if ((functional <= 2 && dysfunctional === 4) || (functional === -2 && dysfunctional <= 2)) return 'Won\'t';
-
-    return 'Needs Analysis';
+    if ((functional === 4 && dysfunctional === 2) ||
+      (functional === 4 && dysfunctional === 2) ||
+      (functional === 4 && dysfunctional === 0)
+    )
+      return "Must";
+  
+    if (
+      (functional === 2 && dysfunctional === 4) ||
+      (functional === 0 && dysfunctional === 4)
+    )
+      return 'Should';
+    if (
+      (functional === 4 && dysfunctional === -1) ||
+      (functional === -1 && dysfunctional === 4)
+    )
+      return 'Could';
+  
+    if (
+      (functional === 2 && dysfunctional === 2) ||
+      (functional === 2 && dysfunctional === 0) ||
+      (functional === 0 && dysfunctional === 2) ||
+      (functional === 0 && dysfunctional === 0)
+    )
+      return 'Won\'t';
+  
+    return 'Needs Analysis'
 };
 
 const categoryMoSCoW = ['Must', 'Should', 'Could', 'Won\'t'];
@@ -57,7 +76,7 @@ const MoSCoWTable = ({ survey_id }: { survey_id: string }) => {
         const fetchResults = async () => {
             try {
                 const response = await fetch(
-                    `${process.env.REACT_APP_API_URL}/api/choice`
+                    `${process.env.REACT_APP_API_URL}/api/choices_survey/${survey_id}`
                 );
                 if (!response.ok) {
                     throw new Error('Trouble');

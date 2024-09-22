@@ -66,6 +66,24 @@ const Survey: React.FC<SurveyProps> = ({
     setSelectedAnswers(newAnswers);
   };
 
+  const createChoices = (choicesArray: Choice[]) => {
+    debugger
+    choicesArray.map(async (f: Choice) => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/choice`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(f),
+        });
+        if (!response.ok) throw new Error("Not ok");
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  };
+
   const nextFeature = () => {
     const currentSelected = selectedAnswers[currentFeatureIndex] || {};
     setResults([...results, {
@@ -78,6 +96,12 @@ const Survey: React.FC<SurveyProps> = ({
     if (currentFeatureIndex < features.length - 1) {
       setCurrentFeatureIndex(prev => prev + 1);
     } else {
+      createChoices([...results, {
+        positive: currentSelected.positive || 0,
+        negative: currentSelected.negative || 0,
+        feature_id: (features[currentFeatureIndex] as any).id,
+        survey_id: Number(survey_id)
+      }]);
       setCurrentFeatureIndex(0);
       setResults([]);
       setSelectedAnswers({});

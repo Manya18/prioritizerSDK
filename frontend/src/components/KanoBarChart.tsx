@@ -3,11 +3,32 @@ import { Choice } from '../types/types';
 import './KanoBarChart.css';
 
 const classifyKano = (functional: number, dysfunctional: number): number => {
-  if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 0;
-  if (functional === 4 && dysfunctional <= 2) return 1;
-  if (functional === 4 && dysfunctional === 4) return 2;
-  if (functional <= 2 && dysfunctional === 4) return 3;
-  if ((functional <= 2 && dysfunctional === 4) || (functional === -2 && dysfunctional <= 2)) return 4;
+  if (functional === 4 && dysfunctional === 2) return 0;
+  if (
+    (functional === 4 && dysfunctional === 2) ||
+    (functional === 4 && dysfunctional === 0)
+  )
+    return 1;
+
+  if (
+    (functional === 2 && dysfunctional === 4) ||
+    (functional === 0 && dysfunctional === 4)
+  )
+    return 2;
+  if (
+    (functional === 4 && dysfunctional === -1) ||
+    (functional === -1 && dysfunctional === 4)
+  )
+    return 3;
+
+  if (
+    (functional === 2 && dysfunctional === 2) ||
+    (functional === 2 && dysfunctional === 0) ||
+    (functional === 0 && dysfunctional === 2) ||
+    (functional === 0 && dysfunctional === 0)
+  )
+    return 4;
+
   return 5;
 };
 
@@ -40,7 +61,7 @@ const KanoBarChart = ({ survey_id }: { survey_id: string }) => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/choice`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/choices_survey/${survey_id}`);
         if (!response.ok) {
           throw new Error("Trouble");
         }

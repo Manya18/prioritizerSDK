@@ -2,7 +2,7 @@ import React from 'react';
 import { Choice, Feature } from '../types/types';
 
 const classifyMoSCoW = (functional: number, dysfunctional: number): string => {
-    if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 'Won\'t';
+    if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 'Must';
     if (functional === 4 && dysfunctional <= 2) return 'Must';
     if (functional === 4 && dysfunctional === 4) return 'Should';
     if (functional <= 2 && dysfunctional === 4) return 'Could';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Choice, Feature } from '../types/types';
 
 const classifyMoSCoW = (functional: number, dysfunctional: number): string => {
@@ -48,17 +48,50 @@ const summMoSCoWCat = (categories: number[]) => {
 };
 
 const MoSCoWTable = ({
-    choices,
-    features,
+    survey_id,
     tableStyle
 }: {
-    choices: Choice[],
-    features: Feature[],
+    survey_id: string,
     tableStyle?: React.CSSProperties
 }) => {
 
+    const [choices, setChoices] = useState<Choice[]>([]);
+    const [features, setFeatures] = useState([]);
     const categoryMap = classifyMoSCoWChoices(choices);
 
+    useEffect(() => {
+      const fetchResults = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.REACT_APP_API_URL}/api/choice`
+          );
+          if (!response.ok) {
+            throw new Error("Trouble");
+          }
+          const data = await response.json();
+  
+          setChoices(data);
+        } catch (error) {
+          throw new Error("Trouble");
+        }
+      };
+      const fetchFeatures = async () => {
+          try {
+            console.log(process.env.REACT_APP_API_URL)
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
+            if (!response.ok) {
+              throw new Error("Trouble");
+            }
+            const data = await response.json();
+            setFeatures(data);
+          } catch (error) {
+              throw new Error("Trouble");
+          }
+        };
+      fetchResults();
+      fetchFeatures();
+    }, []);
+  
     return (
         <div className="moscow-table">
             <h2>Таблица MoSCoW</h2>
@@ -79,11 +112,11 @@ const MoSCoWTable = ({
                 </thead>
                 <tbody>
                     {features.map((feature) => {
-                        const categories = categoryMap[feature.id!] || [];
+                        const categories = categoryMap[(feature as any).id!] || [];
 
                         return (
-                            <tr key={feature.id}>
-                                <td>{feature.title}</td>
+                            <tr key={(feature as any).id}>
+                                <td>{(feature as any).title}</td>
                                 {categoryMoSCoW.map((cat, index) => (
                                     <td style={Math.max(...categories) === categories[index] ? { backgroundColor: 'lightgreen' } : { backgroundColor: 'inherit' }}>
                                         {(categories[index] * 100 / summMoSCoWCat(categories)).toFixed(2)}%

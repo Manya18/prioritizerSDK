@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Choice, Feature } from '../types/types';
 
 const classifyKano = (functional: number, dysfunctional: number): number => {
@@ -33,19 +33,55 @@ const summCat = (categories: number[]) => {
   return categories.reduce((sum, count) => sum + count, 0);
 };
 
-const KanoBarChart = ({ choices, features }: { choices: Choice[], features: Feature[] }) => {
+const KanoBarChart = ({ survey_id }: { survey_id: string }) => {
+  const [choices, setChoices] = useState<Choice[]>([]);
+  const [features, setFeatures] = useState([]);
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/choice`
+        );
+        if (!response.ok) {
+          throw new Error("Trouble");
+        }
+        const data = await response.json();
+
+        setChoices(data);
+      } catch (error) {
+        throw new Error("Trouble");
+      }
+    };
+    const fetchFeatures = async () => {
+        try {
+          console.log(process.env.REACT_APP_API_URL)
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
+          if (!response.ok) {
+            throw new Error("Trouble");
+          }
+          const data = await response.json();
+          setFeatures(data);
+        } catch (error) {
+            throw new Error("Trouble");
+        }
+      };
+    fetchResults();
+    fetchFeatures();
+  }, []);
+
   const categoryMap = classifyChoices(choices);
 
   return (
     <div className="kano-bar-chart">
       <h2>Распределение функций по модели Кано</h2>
       {features.map((feature) => {
-        const categoriesForFeature = categoryMap[feature.id!] || [0, 0, 0, 0, 0, 0];
+        const categoriesForFeature = categoryMap[(feature as any).id!] || [0, 0, 0, 0, 0, 0];
         const totalResponses = summCat(categoriesForFeature);
 
         return (
-          <div key={feature.id} style={{ display: 'flex', margin: '20px' }}>
-            <div title={feature.title} style={{ marginRight: '6px', maxWidth: '100px', textOverflow: 'ellipsis' }}>{feature.title}</div>
+          <div key={(feature as any).id} style={{ display: 'flex', margin: '20px' }}>
+            <div title={(feature as any).title} style={{ marginRight: '6px', maxWidth: '100px', textOverflow: 'ellipsis' }}>{(feature as any).title}</div>
             <div className="kano-bar" style={{ display: 'flex', height: '30px', width: '100%' }}>
               {categories.map((cat, index) => {
                 const count = categoriesForFeature[index];

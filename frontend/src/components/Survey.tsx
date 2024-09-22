@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Survey.css';
 import { Feature, Question, Answer, ResultsType, Choice } from '../types/types';
 
 type SurveyProps = {
-  features: Feature[];
-  onSubmit: (results: Choice[]) => void;
+  survey_id: string,
   borderColor?: string;
   borderHeaderColor?: string;
   buttonBackNextStyle?: React.CSSProperties;
@@ -14,8 +13,7 @@ type SurveyProps = {
 };
 
 const Survey: React.FC<SurveyProps> = ({
-  features,
-  onSubmit,
+  survey_id,
   borderColor,
   borderHeaderColor,
   buttonBackNextStyle,
@@ -27,7 +25,23 @@ const Survey: React.FC<SurveyProps> = ({
   const [results, setResults] = useState<Choice[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: { positive?: number; negative?: number } }>({});
   const [isOpen, setIsOpen] = useState(false);
-  const survey_id = 1;
+  const [features, setFeatures] = useState([]);
+
+  useEffect(() => {
+    const fetchFeatures = async () => {
+        try {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/feature/${survey_id}`);
+          if (!response.ok) {
+            throw new Error("Trouble");
+          }
+          const data = await response.json();
+          setFeatures(data);
+        } catch (error) {
+            throw new Error("Trouble");
+        }
+      };
+    fetchFeatures();
+  }, []);
 
   const questions: Question[] = [
     {
@@ -54,6 +68,23 @@ const Survey: React.FC<SurveyProps> = ({
     },
   ];
 
+  const createChoices = (choicesArray: Choice[]) => {
+    choicesArray.map(async (f: Choice) => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/choice`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(f),
+        });
+        if (!response.ok) throw new Error("Not ok");
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  };
+
   const handleChange = (question_id: number, answer: Answer) => {
     const newAnswers = { ...selectedAnswers };
     if (!newAnswers[currentFeatureIndex]) newAnswers[currentFeatureIndex] = {};
@@ -69,18 +100,18 @@ const Survey: React.FC<SurveyProps> = ({
     setResults([...results, {
       positive: currentSelected.positive || 0,
       negative: currentSelected.negative || 0,
-      feature_id: features[currentFeatureIndex].id!,
-      survey_id: survey_id
+      feature_id: (features[currentFeatureIndex] as any).id!,
+      survey_id: Number(survey_id)
     }]);
 
     if (currentFeatureIndex < features.length - 1) {
       setCurrentFeatureIndex(prev => prev + 1);
     } else {
-      onSubmit([...results, {
+      createChoices([...results, {
         positive: currentSelected.positive || 0,
         negative: currentSelected.negative || 0,
-        feature_id: features[currentFeatureIndex].id!,
-        survey_id: survey_id
+        feature_id: (features[currentFeatureIndex] as any).id,
+        survey_id: Number(survey_id)
       }]);
       setCurrentFeatureIndex(0);
       setResults([]);
@@ -103,10 +134,10 @@ const Survey: React.FC<SurveyProps> = ({
       <main className='prioritizerSDK-content'>
         {features.length > 0 && (
           <div className='feature'>
-            <h3 className='prioritizerSDK-feature'>{features[currentFeatureIndex].title}</h3>
-            {features[currentFeatureIndex].description.length > 0 && <div className='prioritizerSDK-decription'>
+            <h3 className='prioritizerSDK-feature'>{(features[currentFeatureIndex] as any).title}</h3>
+            {(features[currentFeatureIndex] as any).description.length > 0 && <div className='prioritizerSDK-decription'>
               <div className='' onClick={() => setIsOpen(!isOpen)}>Описание ↓</div>
-              <div className=''style={{display: isOpen ? 'block' : 'none'}}>{features[currentFeatureIndex].description}</div>
+              <div className=''style={{display: isOpen ? 'block' : 'none'}}>{(features[currentFeatureIndex] as any).description}</div>
             </div>}
             {questions.map((q: Question) => (
               <div key={q.id} className='prioritizerSDK-question'>
@@ -119,12 +150,12 @@ const Survey: React.FC<SurveyProps> = ({
                       <div className='prioritizerSDK-answer' key={a.id}>
                         <input
                           type="radio"
-                          id={`answer-${features[currentFeatureIndex].id}_${q.id}_${a.id}`}
+                          id={`answer-${(features[currentFeatureIndex] as any).id}_${q.id}_${a.id}`}
                           name={`question_${q.id}`}
                           checked={isChecked}
                           onChange={() => handleChange(q.id, a)}
                         />
-                        <label htmlFor={`answer-${features[currentFeatureIndex].id}_${q.id}_${a.id}`}>{a.title}</label>
+                        <label htmlFor={`answer-${(features[currentFeatureIndex] as any).id}_${q.id}_${a.id}`}>{a.title}</label>
                       </div>
                     );
                   })}

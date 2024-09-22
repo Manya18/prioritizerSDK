@@ -1,90 +1,92 @@
 import React from 'react';
-import { Feature, ResultsType } from '../types/types';
+import { Choice, Feature } from '../types/types';
 
-type KanoCategory = 'Must-be' | 'Performance' | 'Excitement' | 'Indifferent' | 'Reverse';
-
-const classifyKano = (functional: number, dysfunctional: number): KanoCategory => {
-  if (functional === 4 && dysfunctional === -2) return 'Excitement';
-  if (functional === 2 && dysfunctional <= 0) return 'Performance';
-  if (functional === 0 && dysfunctional === 0) return 'Indifferent';
-  if (functional === -2 && dysfunctional === 4) return 'Reverse';
-  return 'Must-be';
+const classifyKano = (functional: number, dysfunctional: number): number => {
+  if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 0; // Questionable
+  if (functional === 4 && dysfunctional <= 2) return 1; // Attractive
+  if (functional === 4 && dysfunctional === 4) return 2; // Performance
+  if (functional <= 2 && dysfunctional === 4) return 3; // Must-be
+  if ((functional <= 2 && dysfunctional === 4) || (functional === -2 && dysfunctional <= 2)) return 4; // Reverse
+  return 5; // Indifferent
 };
 
-const getCategoryColor = (category: KanoCategory) => {
-  switch (category) {
-    case 'Must-be':
-      return 'green';
-    case 'Performance':
-      return 'yellow';
-    case 'Excitement':
-      return 'blue';
-    case 'Indifferent':
-      return 'gray';
-    case 'Reverse':
-      return 'red';
-    default:
-      return 'white';
-  }
+const categories = ['Questionable', 'Attractive', 'Performance', 'Must-be', 'Reverse', 'Indifferent'];
+const colors = ['blue', 'orange', 'yellow', 'red', 'purple', 'gray'];
+
+const classifyChoices = (choices: Choice[]): { [key: number]: number[] } => {
+  const featureMap: { [key: number]: number[] } = {};
+
+  choices.forEach((choice) => {
+    const curCategory = classifyKano(choice.positive, choice.negative);
+
+    if (!featureMap[choice.feature_id]) {
+      featureMap[choice.feature_id] = [0, 0, 0, 0, 0, 0];
+    }
+
+    featureMap[choice.feature_id][curCategory]++;
+  });
+
+  return featureMap;
 };
 
-const KanoBarChart = ({ results, features }: { results: ResultsType, features: Feature[] }) => {
+const summCat = (categories: number[]) => {
+  return categories.reduce((sum, count) => sum + count, 0);
+};
+
+const KanoBarChart = ({ choices, features }: { choices: Choice[], features: Feature[] }) => {
+  const categoryMap = classifyChoices(choices);
+
   return (
     <div className="kano-bar-chart">
       <h2>Распределение функций по модели Кано</h2>
       {features.map((feature) => {
-        const featureResults = results[feature.id!];
+        const categoriesForFeature = categoryMap[feature.id!] || [0, 0, 0, 0, 0, 0];
+        const totalResponses = summCat(categoriesForFeature);
 
-        if (featureResults) {
-          const functionalAnswer = featureResults[0]?.priority ?? 0;
-          const dysfunctionalAnswer = featureResults[1]?.priority ?? 0;
-          const category = classifyKano(functionalAnswer, dysfunctionalAnswer);
+        return (
+          <div key={feature.id} style={{ display: 'flex', margin: '20px' }}>
+            <div title={feature.title} style={{ marginRight: '6px', maxWidth: '100px', textOverflow: 'ellipsis' }}>{feature.title}</div>
+            <div className="kano-bar" style={{ display: 'flex', height: '30px', width: '100%' }}>
+              {categories.map((cat, index) => {
+                const count = categoriesForFeature[index];
+                const percentage = totalResponses > 0 ? (count * 100) / totalResponses : 0;
 
-          const categoryCounts = {
-            'Must-be': 0,
-            'Performance': 0,
-            'Excitement': 0,
-            'Indifferent': 0,
-            'Reverse': 0,
-          };
-
-          const totalResponses = 100;
-          categoryCounts[category] = 100;
-
-          return (
-            <div key={feature.id} className="kano-feature">
-              <h3>{feature.title}</h3>
-              <div className="kano-bar" style={{ display: 'flex', height: '30px', width: '100%' }}>
-                {Object.keys(categoryCounts).map((cat) => {
-                  const percentage = categoryCounts[cat as KanoCategory];
-                  return (
-                    <div
-                      key={cat}
-                      style={{
-                        backgroundColor: getCategoryColor(cat as KanoCategory),
-                        width: `${percentage}%`,
-                        textAlign: 'center',
-                        lineHeight: '30px',
-                        color: 'white',
-                        fontSize: '12px',
-                      }}
-                    >
-                      {percentage > 0 ? `${cat} ${percentage}%` : ''}
-                    </div>
-                  );
-                })}
-              </div>
+                return (
+                  <div
+                    key={cat}
+                    style={{
+                      backgroundColor: colors[index],
+                      width: `${percentage.toFixed(2)}%`,
+                      textAlign: 'center',
+                      lineHeight: '30px',
+                      color: 'black',
+                      fontSize: '12px',
+                    }}
+                  >
+                    {percentage > 0 ? `${percentage.toFixed(2)}%` : ''}
+                  </div>
+                );
+              })}
             </div>
-          );
-        } else {
-          return (
-            <div key={feature.id} className="kano-feature">
-              <h3>{feature.title}</h3>
-              <p>Нет данных</p>
-            </div>
-          );
-        }
+          </div>
+        );
       })}
+
+      <div className="kano-legend" style={{ display: 'flex', gap: '20px', margin: '20px', justifyContent: 'center' }}>
+        {categories.map((cat, index) => (
+          <div key={cat} style={{ display: 'flex', alignItems: 'center' }}>
+            <div
+              style={{
+                backgroundColor: colors[index],
+                width: '20px',
+                height: '20px',
+                marginRight: '10px',
+              }}
+            ></div>
+            <span>{cat}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

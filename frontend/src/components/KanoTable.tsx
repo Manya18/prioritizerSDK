@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { Choice, Feature, ResultsType } from '../types/types';
-import { debug } from 'console';
+import React from 'react';
+import { Choice, Feature } from '../types/types';
 
-type KanoCategory = 'Must-be' | 'Performance' | 'Questionabie' | 'Indifferent' | 'Reverse' | 'Attractive';
 
 const classifyKano = (functional: number, dysfunctional: number): number => {
     if ((functional === 4 && dysfunctional === -2) || (functional === -2 && dysfunctional === 4)) return 0;
@@ -13,28 +11,9 @@ const classifyKano = (functional: number, dysfunctional: number): number => {
     return 5;
 };
 const category = ['Questionabie', 'Attractive', 'Performance', 'Must-be', 'Reverse', 'Indifferent']
-const getCellColor = (category: KanoCategory) => {
-    switch (category) {
-        case 'Must-be':
-            return 'green';
-        case 'Performance':
-            return 'yellow';
-        case 'Questionabie':
-            return 'blue';
-        case 'Indifferent':
-            return 'gray';
-        case 'Reverse':
-            return 'red';
-        default:
-            return 'white';
-    }
-};
-
 const classifyChoices = (choices: Choice[]): { [key: number]: number[] } => {
     const featureMap: { [key: number]: number[] } = {};
     choices.forEach((choice) => {
-        const { positive, negative, feature_id } = choice;
-
         const curCategory = classifyKano(choice.positive, choice.negative);
 
         if (!featureMap[choice.feature_id]) {
@@ -58,24 +37,14 @@ const summCat = (categories: number[]) => {
 const KanoTable = ({
     choices,
     features,
-    cellStyles,
     tableStyle
 }: {
     choices: Choice[],
     features: Feature[],
-    cellStyles?: { [key in KanoCategory]?: React.CSSProperties },
     tableStyle?: React.CSSProperties
 }) => {
-    const defaultStyles = {
-        'Performance': { backgroundColor: getCellColor('Performance') },
-        'Must-be': { backgroundColor: getCellColor('Must-be') },
-        'Questionabie': { backgroundColor: getCellColor('Questionabie') },
-        'Attractive': { backgroundColor: getCellColor('Attractive') },
-        'Indifferent': { backgroundColor: getCellColor('Indifferent') },
-        'Reverse': { backgroundColor: getCellColor('Reverse') }
-    };
+
     const categoryMap = classifyChoices(choices);
-    console.log(categoryMap)
     return (
         <div className="kano-table">
             <h2>Таблица Кано</h2>
@@ -104,7 +73,7 @@ const KanoTable = ({
                             <tr key={feature.id}>
                                 <td>{feature.title}</td>
                                 {category.map((cat, index) => (
-                                    <td style={Math.max(...categories) === categories[index] ? { backgroundColor: 'green' } : { backgroundColor: 'inherit' }}>
+                                    <td style={Math.max(...categories) === categories[index] ? { backgroundColor: 'lightgreen' } : { backgroundColor: 'inherit' }}>
                                         {(categories[index] * 100 / summCat(categories)).toFixed(2)}%</td>
                                 ))}
                             </tr>

@@ -106,14 +106,15 @@ const Survey: React.FC<SurveyProps> = ({
                 </div>
               </div>
             ))}
+
             <div className="prioritizerSDK-buttons">
-              {/* <button
+              <button
                 disabled={currentFeatureIndex === 0}
                 className="Survey-backNextButton"
                 onClick={previousFeature}
                 style={buttonBackNextStyle}>
                 Назад
-              </button> */}
+              </button>
               <button
                 className={currentFeatureIndex < features.length - 1 ? "prioritizerSDK-backNextButton" : "prioritizerSDK-submitButton"}
                 onClick={nextFeature} style={buttonStyle}>

@@ -23,23 +23,23 @@ function App() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({title: surveyTitle}),
+      body: JSON.stringify({ title: surveyTitle }),
     });
     const data = await response.json();
-      featuresArray.map(async (f: Feature) => {
-        try {
-          const response = await fetch("http://localhost:8080/api/feature", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({...f, ...{survey_id: data.id}}),
-          });
-          if (!response.ok) throw new Error("Not ok");
-        } catch (error) {
-          console.error(error);
-        }
-      });
+    featuresArray.map(async (f: Feature) => {
+      try {
+        const response = await fetch("http://localhost:8080/api/feature", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...f, ...{ survey_id: data.id } }),
+        });
+        if (!response.ok) throw new Error("Not ok");
+      } catch (error) {
+        console.error(error);
+      }
+    });
   }
 
   const createChoices = (choicesArray: Choice[]) => {
@@ -110,17 +110,8 @@ function App() {
           textAlign: 'center',
           fontSize: '16px'
         }}
-        cellStyles={{
-          'Must-be': { backgroundColor: 'lightgreen' },
-          'Performance': { backgroundColor: 'lightgreen' },
-          'Questionabie': { backgroundColor: 'lightgreen' },
-          'Attractive': { backgroundColor: 'lightgreen' },
-          'Indifferent': { backgroundColor: 'lightgreen' },
-          'Reverse': { backgroundColor: 'lightgreen' }
-        }}
       />
-
-      <KanoBarChart results={surveyResults} features={features} />
+      <KanoBarChart choices={surveyResults} features={features} />
       <CreateSurvey onSubmit={createSurvey}></CreateSurvey>
     </div>
   );
